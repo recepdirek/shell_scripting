@@ -1,0 +1,21 @@
+recep@server:/home/recep$ more refresh_database.sh
+date
+echo "Dropping tsidbtest"
+mysql -h db.server.com  -u dbuser "-pPassword"  -e 'DROP DATABASE testdb;'
+date
+echo "database dropped"
+date
+echo "creating tsidbtest"
+mysql -h db.server.com -u dbuser "-pPassword" -e 'CREATE DATABASE testdb;'
+date
+echo "database created"
+date
+echo "database snapshot started"
+mysqldump -h db.server.com -u dbuser "-pPassword" preproddb > /home/recep/testdb.sql 
+sed -i 's/DEFINER=[^*]*\*/\*/g' /home/recep/tsidbuat.sql #we are getting rid of definer to run view succesfully
+echo "database snapshot finished"
+date
+echo "database refresh started"
+mysql -h db.server.com -u dbuser "-pPassword" testdb < /home/recep/testdb.sql
+date
+echo "database refresh completed"
